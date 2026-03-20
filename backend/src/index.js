@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import { clerkMiddleware } from '@clerk/express';
-import { fileUpload } from "express-fileupload";
+import fileUpload from "express-fileupload";
 import path from "path";
 
 import { connectDB } from "./lib/db.js";
@@ -11,8 +11,6 @@ import authRoutes from "./routes/auth.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
 import statsRoutes from "./routes/stats.route.js";
-import { connect } from "mongoose";
-import { useTransition } from "react";
 
 
 dotenv.config();
