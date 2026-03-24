@@ -33,7 +33,7 @@ const seedDatabase = async () => {
 			},
 			{
 				title: "Ban Đầu",
-				artist: ("hien long", "Pham"),
+				artist: "hien long, Pham",
 				imageUrl: "/cover-images/khi nao em tien temp cover.jpg",
 				audioUrl: "/songs/bandau master.wav",
 				plays: Math.floor(Math.random() * 5000),
@@ -41,7 +41,7 @@ const seedDatabase = async () => {
 			},
 			{
 				title: "RƠI",
-				artist: ("hien long", "thanbong"),
+				artist: "hien long, thanbong",
 				imageUrl: "/cover-images/khi nao em tien temp cover.jpg",
 				audioUrl: "/songs/ROI MASTER NEW.wav",
 				plays: Math.floor(Math.random() * 5000),
@@ -57,7 +57,7 @@ const seedDatabase = async () => {
 			},
 			{
 				title: "midsummer",
-				artist: ("Pham", "hien long"),
+				artist: "Pham, hien long",
 				imageUrl: "/cover-images/khi nao em tien temp cover.jpg",
 				audioUrl: "/songs/midsummer mastered.wav",
 				plays: Math.floor(Math.random() * 5000),
@@ -65,7 +65,7 @@ const seedDatabase = async () => {
 			},
 			{
 				title: "y xì em",
-				artist: ("Pham", "hien long"),
+				artist: "Pham, hien long",
 				imageUrl: "/cover-images/khi nao em tien temp cover.jpg",
 				audioUrl: "/songs/y xi em.mp3",
 				plays: Math.floor(Math.random() * 5000),

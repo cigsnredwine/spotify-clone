@@ -91,21 +91,21 @@ const songs = [
 	},
 	{
 		title: "You Belong To Somebody Else",
-		artist: ("DeJ Loaf", "Jacquees"),
+		artist: "DeJ Loaf, Jacquees",
 		imageUrl: "/cover-images/13.jpg",
 		audioUrl: "/songs/13.mp3",
 		duration: 3*60 + 38, // 0:39
 	},
 	{
 		title: "A New Kind Of Love - Demo",
-		artist: ("Frou Frou", "Imogen Heap", "Guy Sigsworth"),
+		artist: "Frou Frou, Imogen Heap, Guy Sigsworth",
 		imageUrl: "/cover-images/14.jpg",
 		audioUrl: "/songs/14.mp3",
 		duration: 4*60 + 19, // 0:27
 	},
 	{
 		title: "Stateside + Zara Larrson",
-		artist: ("PinkPantheress", "Zara Larrson"),
+		artist: "PinkPantheress, Zara Larrson",
 		imageUrl: "/cover-images/15.jpg",
 		audioUrl: "/songs/15.mp3",
 		duration: 3 * 60 + 5, // 0:36

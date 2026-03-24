@@ -38,11 +38,12 @@ export const useMusicStore = create<MusicStore>((set) => ({
     fetchAlbumById: async (id) => {
         set({
             isLoading: true,
-            error: null
+            error: null,
+            currentAlbum: null,
         })
         try {
             const response = await axiosInstance.get(`/albums/${id}`);
-            return response.data;
+            set({ currentAlbum: response.data });
         } catch (error: any) {
             set({error: error.response.data.message});         
         } finally {
@@ -50,5 +51,4 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     }
 }));
-
 
