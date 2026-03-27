@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import LeftSidebar from "./components/LeftSidebar.tsx"
+import FriendsActivity from "./components/FriendsActivity.tsx";
 
 const MainLayout = () => {
     const isMobile=false;
@@ -30,7 +31,7 @@ const MainLayout = () => {
                 collapsedSize={0}
                 collapsible
             >
-                friends activity
+                <FriendsActivity />
             </ResizablePanel>
 
         </ResizablePanelGroup>

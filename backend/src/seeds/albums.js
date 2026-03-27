@@ -136,7 +136,7 @@ const seedDatabase = async () => {
 				artist: "hien long",
 				imageUrl: "/albums/khi nao em tien temp cover.jpg",
 				releaseYear: 2026,
-				songs: createdSongs.slice(0, 8).map((song) => song._id),
+				songs: createdSongs.slice(0, 9).map((song) => song._id),
 			},
 			{
 				title: "Coastal Dreaming",
