@@ -21,27 +21,60 @@ export const createSong = async (req, res, next) => {
             return res.status(400).json({message: "Please upload all files"});
         }
 
-        const {title, artist, albumId, duration}= req.body
+        const {
+            title,
+            artist,
+            albumId,
+            duration,
+            newAlbumTitle,
+            newAlbumArtist,
+            newAlbumReleaseYear,
+        } = req.body
         const audioFile = req.files.audioFile;
         const imageFile = req.files.imageFile;
 
         const audioUrl = await uploadToCloudinary(audioFile);
         const imageUrl = await uploadToCloudinary(imageFile);
 
+        let resolvedAlbumId = albumId || null;
+
+        if (!resolvedAlbumId && newAlbumTitle?.trim()) {
+            const albumTitle = newAlbumTitle.trim();
+            const albumArtist = (newAlbumArtist?.trim() || artist?.trim() || "Unknown Artist");
+            const releaseYear = Number(newAlbumReleaseYear) || new Date().getFullYear();
+
+            let album = await Album.findOne({
+                title: albumTitle,
+                artist: albumArtist,
+            });
+
+            if (!album) {
+                album = await Album.create({
+                    title: albumTitle,
+                    artist: albumArtist,
+                    imageUrl,
+                    releaseYear,
+                    songs: [],
+                });
+            }
+
+            resolvedAlbumId = album._id;
+        }
+
         const song = new Song({
             title,
             artist,
-            audioURL,
+            audioUrl,
             imageUrl,
-            albumId: albumId || null,
-            duration,
+            albumId: resolvedAlbumId,
+            duration: Number(duration),
         })
 
         await song.save();
 
         // if song belongs to album, update album's songs array
-        if(albumId) {
-            await Album.findByIdAndUpdate(albumId, {
+        if(resolvedAlbumId) {
+            await Album.findByIdAndUpdate(resolvedAlbumId, {
                 $push: {
                     songs: song._id
                 }

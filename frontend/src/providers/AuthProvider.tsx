@@ -13,28 +13,35 @@ const updateApiToken = (token: string | null) => {
 };
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded, isSignedIn } = useAuth();
   const [loading, setLoading] = useState(true);
-  const {checkAdminStatus} = useAuthStore()
+  const { checkAdminStatus, reset } = useAuthStore()
 
   useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
     const initAuth = async () => {
       try {
-        const token = await getToken();
+        const token = isSignedIn ? await getToken() : null;
         updateApiToken(token);
 
         if (token) {
           await checkAdminStatus();
+        } else {
+          reset();
         }
       } catch (error) {
         updateApiToken(null);
+        reset();
         console.log("Error in initAuth", error);
       } finally {
         setLoading(false);
       }
     };
     initAuth();
-  }, [getToken]);
+  }, [checkAdminStatus, getToken, isLoaded, isSignedIn, reset]);
 
   if (loading) {
     return (

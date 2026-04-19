@@ -19,15 +19,20 @@ dotenv.config();
 const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
 
 app.use(cors(
     {
-        origin: "http://localhost:3000",
+        origin: CLIENT_URL,
         credentials: true
     }
 ))
 app.use(express.json()); // to parse req.body
-app.use(clerkMiddleware()); // add auth to req obj ==> req.auth
+app.use(
+    clerkMiddleware({
+        authorizedParties: [CLIENT_URL],
+    })
+); // add auth to req obj ==> req.auth
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: path.join(__dirname, "tmp"),
