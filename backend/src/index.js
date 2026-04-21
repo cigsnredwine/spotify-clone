@@ -23,21 +23,33 @@ dotenv.config();
 const __dirname = path.resolve();
 const app = express();
 const PORT = process.env.PORT;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const CLIENT_URLS = (process.env.CLIENT_URL || "http://localhost:3000")
+    .split(",")
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;
+    return CLIENT_URLS.includes(origin);
+};
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
-app.use(cors(
-    {
-        origin: CLIENT_URL,
-        credentials: true
-    }
-))
+app.use(cors({
+    origin(origin, callback) {
+        if (isAllowedOrigin(origin)) {
+            return callback(null, true);
+        }
+
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true
+}))
 app.use(express.json()); // to parse req.body
 app.use(
     clerkMiddleware({
-        authorizedParties: [CLIENT_URL],
+        authorizedParties: CLIENT_URLS,
     })
 ); // add auth to req obj ==> req.auth
 app.use(fileUpload({
@@ -91,4 +103,3 @@ httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
 });
-

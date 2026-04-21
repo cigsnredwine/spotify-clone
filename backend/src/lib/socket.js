@@ -3,11 +3,14 @@ import {Server} from "socket.io";
 import {Message} from "../models/message.model.js";
 
 export const initializeSocket = (server) => {
-    const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+    const CLIENT_URLS = (process.env.CLIENT_URL || "http://localhost:3000")
+        .split(",")
+        .map((url) => url.trim())
+        .filter(Boolean);
 
     const io = new Server(server, {
         cors:{
-            origin: CLIENT_URL,
+            origin: CLIENT_URLS,
             credentials: true
         }
     });

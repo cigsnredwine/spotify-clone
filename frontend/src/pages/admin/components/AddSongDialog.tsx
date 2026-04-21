@@ -35,7 +35,11 @@ const formatDetectedDuration = (durationInSeconds: number) => {
 	return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
-const AddSongDialog = () => {
+interface AddSongDialogProps {
+	endpoint?: string;
+}
+
+const AddSongDialog = ({ endpoint = "/admin/songs" }: AddSongDialogProps) => {
 	const { albums, fetchAlbums, fetchSongs } = useMusicStore();
 	const [songDialogOpen, setSongDialogOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -120,7 +124,7 @@ const AddSongDialog = () => {
 			formData.append("audioFile", files.audio);
 			formData.append("imageFile", files.image);
 
-			await axiosInstance.post("/admin/songs", formData, {
+			await axiosInstance.post(endpoint, formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},

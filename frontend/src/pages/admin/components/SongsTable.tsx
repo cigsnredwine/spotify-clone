@@ -3,7 +3,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useMusicStore } from "@/stores/useMusicStore";
 import { Calendar, Trash2 } from "lucide-react";
 
-const SongsTable = () => {
+interface SongsTableProps {
+	canDelete?: boolean;
+}
+
+const SongsTable = ({ canDelete = true }: SongsTableProps) => {
 	const { songs, isLoading, error, deleteSong } = useMusicStore();
 
 	if (isLoading) {
@@ -30,7 +34,7 @@ const SongsTable = () => {
 					<TableHead>Title</TableHead>
 					<TableHead>Artist</TableHead>
 					<TableHead>Release Date</TableHead>
-					<TableHead className='text-right'>Actions</TableHead>
+					{canDelete && <TableHead className='text-right'>Actions</TableHead>}
 				</TableRow>
 			</TableHeader>
 
@@ -49,18 +53,20 @@ const SongsTable = () => {
 							</span>
 						</TableCell>
 
-						<TableCell className='text-right'>
-							<div className='flex gap-2 justify-end'>
-								<Button
-									variant={"ghost"}
-									size={"sm"}
-									className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
-									onClick={() => deleteSong(song._id)}
-								>
-									<Trash2 className='size-4' />
-								</Button>
-							</div>
-						</TableCell>
+						{canDelete && (
+							<TableCell className='text-right'>
+								<div className='flex gap-2 justify-end'>
+									<Button
+										variant={"ghost"}
+										size={"sm"}
+										className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
+										onClick={() => deleteSong(song._id)}
+									>
+										<Trash2 className='size-4' />
+									</Button>
+								</div>
+							</TableCell>
+						)}
 					</TableRow>
 				))}
 			</TableBody>

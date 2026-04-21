@@ -4,7 +4,11 @@ import { useMusicStore } from "@/stores/useMusicStore";
 import { Calendar, Music, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 
-const AlbumsTable = () => {
+interface AlbumsTableProps {
+	canDelete?: boolean;
+}
+
+const AlbumsTable = ({ canDelete = true }: AlbumsTableProps) => {
 	const { albums, deleteAlbum, fetchAlbums } = useMusicStore();
 
 	useEffect(() => {
@@ -20,7 +24,7 @@ const AlbumsTable = () => {
 					<TableHead>Artist</TableHead>
 					<TableHead>Release Year</TableHead>
 					<TableHead>Songs</TableHead>
-					<TableHead className='text-right'>Actions</TableHead>
+					{canDelete && <TableHead className='text-right'>Actions</TableHead>}
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -43,18 +47,20 @@ const AlbumsTable = () => {
 								{album.songs.length} songs
 							</span>
 						</TableCell>
-						<TableCell className='text-right'>
-							<div className='flex gap-2 justify-end'>
-								<Button
-									variant='ghost'
-									size='sm'
-									onClick={() => deleteAlbum(album._id)}
-									className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
-								>
-									<Trash2 className='h-4 w-4' />
-								</Button>
-							</div>
-						</TableCell>
+						{canDelete && (
+							<TableCell className='text-right'>
+								<div className='flex gap-2 justify-end'>
+									<Button
+										variant='ghost'
+										size='sm'
+										onClick={() => deleteAlbum(album._id)}
+										className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
+									>
+										<Trash2 className='h-4 w-4' />
+									</Button>
+								</div>
+							</TableCell>
+						)}
 					</TableRow>
 				))}
 			</TableBody>

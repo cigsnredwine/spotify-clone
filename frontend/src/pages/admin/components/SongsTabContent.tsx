@@ -3,7 +3,12 @@ import { Music } from "lucide-react";
 import SongsTable from "./SongsTable";
 import AddSongDialog from "./AddSongDialog";
 
-const SongsTabContent = () => {
+interface SongsTabContentProps {
+	canDelete?: boolean;
+	uploadEndpoint?: string;
+}
+
+const SongsTabContent = ({ canDelete = true, uploadEndpoint = "/admin/songs" }: SongsTabContentProps) => {
 	return (
 		<Card>
 			<CardHeader>
@@ -15,11 +20,11 @@ const SongsTabContent = () => {
 						</CardTitle>
 						<CardDescription>Manage your music tracks</CardDescription>
 					</div>
-					<AddSongDialog />
+					<AddSongDialog endpoint={uploadEndpoint} />
 				</div>
 			</CardHeader>
 			<CardContent>
-				<SongsTable />
+				<SongsTable canDelete={canDelete} />
 			</CardContent>
 		</Card>
 	);

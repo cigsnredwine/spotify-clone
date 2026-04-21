@@ -14,7 +14,11 @@ import { Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 
-const AddAlbumDialog = () => {
+interface AddAlbumDialogProps {
+	endpoint?: string;
+}
+
+const AddAlbumDialog = ({ endpoint = "/admin/albums" }: AddAlbumDialogProps) => {
 	const [albumDialogOpen, setAlbumDialogOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -48,7 +52,7 @@ const AddAlbumDialog = () => {
 			formData.append("releaseYear", newAlbum.releaseYear.toString());
 			formData.append("imageFile", imageFile);
 
-			await axiosInstance.post("/admin/albums", formData, {
+			await axiosInstance.post(endpoint, formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
