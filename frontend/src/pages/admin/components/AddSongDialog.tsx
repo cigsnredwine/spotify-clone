@@ -18,7 +18,7 @@ import toast from "react-hot-toast";
 
 interface NewSong {
 	title: string;
-	artist: string;
+	artists: string[];
 	album: string | null;
 	newAlbumTitle: string;
 	newAlbumArtist: string;
@@ -42,7 +42,7 @@ const AddSongDialog = () => {
 
 	const [newSong, setNewSong] = useState<NewSong>({
 		title: "",
-		artist: "",
+		artists: [""],
 		album: "none",
 		newAlbumTitle: "",
 		newAlbumArtist: "",
@@ -102,13 +102,16 @@ const AddSongDialog = () => {
 			}
 
 			const formData = new FormData();
+            const normalizedArtists = newSong.artists.map((artist) => artist.trim()).filter(Boolean);
+            const displayArtist = normalizedArtists.join(", ");
 
 			formData.append("title", newSong.title);
-			formData.append("artist", newSong.artist);
+			formData.append("artist", displayArtist);
+			formData.append("artists", JSON.stringify(normalizedArtists));
 			formData.append("duration", newSong.duration);
 			if (newSong.album === CREATE_NEW_ALBUM) {
 				formData.append("newAlbumTitle", newSong.newAlbumTitle);
-				formData.append("newAlbumArtist", newSong.newAlbumArtist || newSong.artist);
+				formData.append("newAlbumArtist", newSong.newAlbumArtist || displayArtist);
 				formData.append("newAlbumReleaseYear", newSong.newAlbumReleaseYear);
 			} else if (newSong.album && newSong.album !== "none") {
 				formData.append("albumId", newSong.album);
@@ -125,7 +128,7 @@ const AddSongDialog = () => {
 
 			setNewSong({
 				title: "",
-				artist: "",
+				artists: [""],
 				album: "none",
 				newAlbumTitle: "",
 				newAlbumArtist: "",
@@ -229,21 +232,62 @@ const AddSongDialog = () => {
 					</div>
 
 					<div className='space-y-2'>
-						<label className='text-sm font-medium'>Artist</label>
-						<Input
-							value={newSong.artist}
-							onChange={(e) =>
-								setNewSong((prev) => ({
-									...prev,
-									artist: e.target.value,
-									newAlbumArtist:
-										prev.album === CREATE_NEW_ALBUM && !prev.newAlbumArtist
-											? e.target.value
-											: prev.newAlbumArtist,
-								}))
-							}
-							className='bg-zinc-800 border-zinc-700'
-						/>
+						<label className='text-sm font-medium'>Artists</label>
+                        <div className='space-y-2'>
+                            {newSong.artists.map((artist, index) => (
+                                <div key={index} className='flex gap-2'>
+                                    <Input
+                                        value={artist}
+                                        onChange={(e) =>
+                                            setNewSong((prev) => {
+                                                const updatedArtists = [...prev.artists];
+                                                updatedArtists[index] = e.target.value;
+                                                const joinedArtists = updatedArtists.map((value) => value.trim()).filter(Boolean).join(", ");
+
+                                                return {
+                                                    ...prev,
+                                                    artists: updatedArtists,
+                                                    newAlbumArtist:
+                                                        prev.album === CREATE_NEW_ALBUM && !prev.newAlbumArtist
+                                                            ? joinedArtists
+                                                            : prev.newAlbumArtist,
+                                                };
+                                            })
+                                        }
+                                        className='bg-zinc-800 border-zinc-700'
+                                        placeholder={`Artist ${index + 1}`}
+                                    />
+
+                                    {newSong.artists.length > 1 && (
+                                        <Button
+                                            type='button'
+                                            variant='outline'
+                                            onClick={() =>
+                                                setNewSong((prev) => ({
+                                                    ...prev,
+                                                    artists: prev.artists.filter((_, artistIndex) => artistIndex !== index),
+                                                }))
+                                            }
+                                        >
+                                            Remove
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+
+                            <Button
+                                type='button'
+                                variant='outline'
+                                onClick={() =>
+                                    setNewSong((prev) => ({
+                                        ...prev,
+                                        artists: [...prev.artists, ""],
+                                    }))
+                                }
+                            >
+                                Add Artist
+                            </Button>
+                        </div>
 					</div>
 
 					<div className='space-y-2'>
@@ -265,7 +309,7 @@ const AddSongDialog = () => {
 										album: value,
 										newAlbumArtist:
 											value === CREATE_NEW_ALBUM
-												? prev.newAlbumArtist || prev.artist
+												? prev.newAlbumArtist || prev.artists.map((artist) => artist.trim()).filter(Boolean).join(", ")
 												: prev.newAlbumArtist,
 									}))
 								}
@@ -342,6 +386,7 @@ const AddSongDialog = () => {
 						onClick={handleSubmit}
 						disabled={
 							isLoading ||
+                            newSong.artists.every((artist) => !artist.trim()) ||
 							(newSong.album === CREATE_NEW_ALBUM && !newSong.newAlbumTitle.trim())
 						}
 					>

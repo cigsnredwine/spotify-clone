@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 !.env*.example
+node_modules/
 
 # Frontend env files
 frontend/.env.local
@@ -11,3 +12,4 @@ frontend/.env
 # Backend env files
 backend/.env
 backend/.env.*
+backend/node_modules/

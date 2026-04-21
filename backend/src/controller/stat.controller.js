@@ -13,14 +13,51 @@ export const getStats = async (req, res, next) => {
 
             Song.aggregate([
                 {
-                    $uniionWith:{
+                    $project: {
+                        normalizedArtists: {
+                            $cond: [
+                                { $gt: [{ $size: { $ifNull: ["$artists", []] } }, 0] },
+                                "$artists",
+                                {
+                                    $map: {
+                                        input: { $split: [{ $ifNull: ["$artist", ""] }, ","] },
+                                        as: "artist",
+                                        in: { $trim: { input: "$$artist" } }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    $unionWith:{
                         coll:"albums",
-                        pipeline:[]
+                        pipeline:[
+                            {
+                                $project: {
+                                    normalizedArtists: {
+                                        $map: {
+                                            input: { $split: [{ $ifNull: ["$artist", ""] }, ","] },
+                                            as: "artist",
+                                            in: { $trim: { input: "$$artist" } }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $unwind: "$normalizedArtists"
+                },
+                {
+                    $match: {
+                        normalizedArtists: { $ne: "" }
                     }
                 },
                 {
                     $group: {
-                        _id: "$artist",
+                        _id: "$normalizedArtists",
                     }
                 },
                 {

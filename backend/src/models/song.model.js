@@ -5,6 +5,11 @@ const songSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    artists: {
+        type: [String],
+        required: true,
+        default: [],
+    },
     artist:{
         type: String,
         required: true

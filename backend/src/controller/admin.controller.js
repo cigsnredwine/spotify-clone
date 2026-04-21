@@ -3,18 +3,41 @@ import {Album} from "../models/album.model.js";
 import cloudinary from "../lib/cloudinary.js";
 
 // helper functions for cloudinary uploads
-const uploadToCloudinary = async (file) => {
+const uploadToCloudinary = async (file, options = {}) => {
     try {
         const result = await cloudinary.uploader.upload(file.tempFilePath, {
             resource_type: "auto",
+            ...options,
             }
         ) 
-    return result.secure_url;
+    return result;
     } catch (error) {
         console.log("Error in uploadeToCloudinary", error);
         throw new Error("Error uploading to Cloudinary");
     }
 }
+
+const normalizeArtists = (artistsInput, artistInput) => {
+    if (artistsInput) {
+        try {
+            const parsedArtists = JSON.parse(artistsInput);
+
+            if (Array.isArray(parsedArtists)) {
+                return parsedArtists
+                    .map((artist) => String(artist).trim())
+                    .filter(Boolean);
+            }
+        } catch (error) {
+            console.log("Error parsing artists payload", error);
+        }
+    }
+
+    return String(artistInput || "")
+        .split(",")
+        .map((artist) => artist.trim())
+        .filter(Boolean);
+};
+
 export const createSong = async (req, res, next) => {
     try {
         if(!req.files || !req.files.audioFile || !req.files.imageFile){
@@ -23,6 +46,7 @@ export const createSong = async (req, res, next) => {
 
         const {
             title,
+            artists,
             artist,
             albumId,
             duration,
@@ -33,14 +57,21 @@ export const createSong = async (req, res, next) => {
         const audioFile = req.files.audioFile;
         const imageFile = req.files.imageFile;
 
-        const audioUrl = await uploadToCloudinary(audioFile);
-        const imageUrl = await uploadToCloudinary(imageFile);
+        const audioUpload = await uploadToCloudinary(audioFile, { resource_type: "video" });
+        const imageUpload = await uploadToCloudinary(imageFile, { resource_type: "image" });
+        const audioUrl = audioUpload.secure_url;
+        const imageUrl = imageUpload.secure_url;
+        const resolvedDuration = Number.isFinite(audioUpload.duration)
+            ? Math.round(audioUpload.duration)
+            : Number(duration);
+        const normalizedArtists = normalizeArtists(artists, artist);
+        const displayArtist = normalizedArtists.join(", ");
 
         let resolvedAlbumId = albumId || null;
 
         if (!resolvedAlbumId && newAlbumTitle?.trim()) {
             const albumTitle = newAlbumTitle.trim();
-            const albumArtist = (newAlbumArtist?.trim() || artist?.trim() || "Unknown Artist");
+            const albumArtist = (newAlbumArtist?.trim() || displayArtist || "Unknown Artist");
             const releaseYear = Number(newAlbumReleaseYear) || new Date().getFullYear();
 
             let album = await Album.findOne({
@@ -63,11 +94,12 @@ export const createSong = async (req, res, next) => {
 
         const song = new Song({
             title,
-            artist,
+            artists: normalizedArtists,
+            artist: displayArtist,
             audioUrl,
             imageUrl,
             albumId: resolvedAlbumId,
-            duration: Number(duration),
+            duration: resolvedDuration,
         })
 
         await song.save();

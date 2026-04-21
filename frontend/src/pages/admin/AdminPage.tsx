@@ -7,18 +7,37 @@ import SongsTabContent from './components/SongsTabContent'
 import AlbumsTabContent from './components/AlbumsTabContent'
 import { useEffect } from 'react'
 import { useMusicStore } from '@/stores/useMusicStore'
+import { Loader } from 'lucide-react'
 
 const AdminPage = () => {
-    const { isAdmin, isLoading } = useAuthStore()
+    const { isAdmin, isLoading, hasCheckedAdmin, checkAdminStatus } = useAuthStore()
     const { fetchAlbums, fetchSongs, fetchStats } = useMusicStore()
 
     useEffect(() => {
+        if (!hasCheckedAdmin && !isLoading) {
+            checkAdminStatus()
+        }
+    }, [checkAdminStatus, hasCheckedAdmin, isLoading])
+
+    useEffect(() => {
+        if (!isAdmin) {
+            return
+        }
+
         fetchAlbums()
         fetchSongs()
         fetchStats()
     }, [fetchAlbums, fetchSongs, fetchStats, isAdmin])
 
-    if (!isAdmin && !isLoading) return <div>Unauthorized</div>
+    if (isLoading || !hasCheckedAdmin) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-linear-to-b from-zinc-900 via-zinc-900 to-black text-zinc-100">
+                <Loader className="size-8 animate-spin text-blue-500" />
+            </div>
+        )
+    }
+
+    if (!isAdmin) return <div>Unauthorized</div>
 
     return (
         <div className="min-h-screen bg-linear-to-b from-zinc-900 via-zinc-900 to-black p-8 text-zinc-100 p-8">
