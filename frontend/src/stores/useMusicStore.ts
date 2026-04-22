@@ -10,15 +10,15 @@ interface MusicStore {
     isLoading: boolean;
     error: string | null;
     currentAlbum: Album | null;
-    madeForYouSongs: Song[];
+    recentlyUpdatedSongs: Song[];
     trendingSongs: Song[];
-    featuredSongs: Song[];
+    newUploadSongs: Song[];
     stats:Stats;
 
     fetchAlbums: () => Promise<void>;
     fetchAlbumById: (id: string) => Promise<void>;
-    fetchFeaturedSongs: () => Promise<void>;
-    fetchMadeForYouSongs: () => Promise<void>;
+    fetchNewUploadSongs: () => Promise<void>;
+    fetchRecentlyUpdatedSongs: () => Promise<void>;
     fetchTrendingSongs: () => Promise<void>;
     fetchStats:() => Promise<void>;
     fetchSongs: () => Promise<void>;
@@ -34,8 +34,8 @@ export const useMusicStore = create<MusicStore>((set) => ({
     isLoading: false,
     error: null,
     currentAlbum: null,
-    madeForYouSongs: [],
-    featuredSongs: [],
+    recentlyUpdatedSongs: [],
+    newUploadSongs: [],
     trendingSongs: [],
     stats: {
         totalSongs: 0,
@@ -134,11 +134,11 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     },
 
-    fetchFeaturedSongs: async () => {
+    fetchNewUploadSongs: async () => {
         set({ isLoading: true, error:null });
         try {
-            const response = await axiosInstance.get("/songs/featured");
-            set({ featuredSongs: response.data });
+            const response = await axiosInstance.get("/songs/new-uploads");
+            set({ newUploadSongs: response.data });
         } catch (error: any) {
             set({error: error.response.data.message});
         } finally {
@@ -146,11 +146,11 @@ export const useMusicStore = create<MusicStore>((set) => ({
         }
     },
     
-    fetchMadeForYouSongs: async () => {
+    fetchRecentlyUpdatedSongs: async () => {
         set({ isLoading: true, error:null });
         try {
-            const response = await axiosInstance.get("/songs/made-for-you");
-            set({ madeForYouSongs: response.data });
+            const response = await axiosInstance.get("/songs/recently-updated");
+            set({ recentlyUpdatedSongs: response.data });
         } catch (error:any) {
             set({error: error.response.data.message});
         } finally{

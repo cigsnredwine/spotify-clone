@@ -69,10 +69,10 @@ const BrowsePage = () => {
 	return (
 		<main className='h-full overflow-hidden rounded-xl border border-white/8 bg-black/30 backdrop-blur-[6px] shadow-[0_14px_36px_rgba(0,0,0,0.12)]'>
 			<Topbar />
-			<ScrollArea className='h-[calc(100vh-180px)]'>
-				<div className='p-4 sm:p-6'>
-					<div className='mb-8'>
-						<h1 className='text-3xl font-bold text-white sm:text-4xl'>{config.title}</h1>
+			<ScrollArea className='h-[calc(100vh-172px)] sm:h-[calc(100vh-180px)]'>
+				<div className='p-3 sm:p-6'>
+					<div className='mb-6 sm:mb-8'>
+						<h1 className='text-2xl font-bold text-white sm:text-4xl'>{config.title}</h1>
 						<p className='mt-2 text-sm text-zinc-400'>
 							Explore the full collection for this section.
 						</p>

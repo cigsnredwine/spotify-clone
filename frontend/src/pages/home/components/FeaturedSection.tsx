@@ -1,11 +1,11 @@
-import FeaturedGridSkeleton from '@/components/ui/skeletons/FeaturedGridSkeleton';
+import NewUploadGridSkeleton from '@/components/ui/skeletons/NewUploadsSectionSkeleton';
 import { useMusicStore } from '@/stores/useMusicStore'
 import PlayButton from './PlayButton';
 
-const FeaturedSection = () => {
-    const {isLoading, featuredSongs, error} = useMusicStore();
+const NewUploadsSection = () => {
+    const {isLoading, newUploadSongs, error} = useMusicStore();
 
-    if(isLoading) return <FeaturedGridSkeleton />
+    if(isLoading) return <NewUploadGridSkeleton />
 
     if(error) return <p className="text-red-500 mb-4 text-lg">{error}</p>
 
@@ -13,7 +13,7 @@ const FeaturedSection = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         
-        {featuredSongs.map((song) => (
+        {newUploadSongs.map((song) => (
             <div
                 key={song._id}
                 className="group relative flex cursor-pointer items-stretch overflow-hidden rounded-md bg-zinc-800/50 transition-colors hover:bg-zinc-700/50"
@@ -36,4 +36,4 @@ const FeaturedSection = () => {
   )
 }
 
-export default FeaturedSection
+export default NewUploadsSection

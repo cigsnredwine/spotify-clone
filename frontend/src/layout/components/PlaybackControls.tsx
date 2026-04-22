@@ -54,22 +54,22 @@ export const PlaybackControls = () => {
 	};
 
 	return (
-		<footer className='h-24 border-t border-white/8 bg-black/34 px-4 backdrop-blur-[6px] rounded-xl'>
-			<div className='mx-auto flex h-full max-w-[1800px] items-center justify-between gap-4'>
+		<footer className='rounded-[1.35rem] border-t border-white/8 bg-black/34 px-3 py-3 backdrop-blur-[6px] sm:h-24 sm:px-4 sm:py-0'>
+			<div className='mx-auto flex max-w-[1800px] flex-col gap-3 sm:h-full sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
 				{/* currently playing song */}
-				<div className='hidden w-[30%] min-w-[180px] items-center gap-4 sm:flex'>
+				<div className='flex min-w-0 items-center gap-3 sm:w-[30%] sm:min-w-[180px] sm:gap-4'>
 					{currentSong && (
 						<>
 							<img
 								src={currentSong.imageUrl}
 								alt={currentSong.title}
-								className='w-14 h-14 object-cover rounded-md'
+								className='h-11 w-11 rounded-md object-cover sm:h-14 sm:w-14'
 							/>
 							<div className='flex-1 min-w-0'>
-								<div className='font-medium truncate hover:underline cursor-pointer'>
+								<div className='cursor-pointer truncate text-sm font-medium hover:underline sm:text-base'>
 									{currentSong.title}
 								</div>
-								<div className='text-sm text-zinc-400 truncate hover:underline cursor-pointer'>
+								<div className='cursor-pointer truncate text-xs text-zinc-400 hover:underline sm:text-sm'>
 									{currentSong.artist}
 								</div>
 							</div>
@@ -78,8 +78,8 @@ export const PlaybackControls = () => {
 				</div>
 
 				{/* player controls*/}
-				<div className='flex flex-col items-center gap-2 flex-1 max-w-full sm:max-w-[45%]'>
-					<div className='flex items-center gap-4 sm:gap-6'>
+				<div className='flex flex-1 flex-col items-center gap-2 max-w-full sm:max-w-[45%]'>
+					<div className='flex items-center gap-3 sm:gap-6'>
 						<Button
 							size='icon'
 							variant='ghost'
@@ -104,11 +104,11 @@ export const PlaybackControls = () => {
 
 						<Button
 							size='icon'
-							className='bg-primary transition-all hover:scale-105 hover:bg-primary/90'
+							className='play-button-surface size-12 sm:size-8'
 							onClick={togglePlay}
 							disabled={!currentSong}
 						>
-							{isPlaying ? <Pause className='size-5 text-black' /> : <Play className='size-5 text-black' />}
+							{isPlaying ? <Pause className='size-5' /> : <Play className='size-5' />}
 						</Button>
 						<Button
 							size='icon'
@@ -132,8 +132,8 @@ export const PlaybackControls = () => {
 						</Button>
 					</div>
 
-					<div className='flex items-center gap-2 w-full px-2 sm:px-0'>
-						<div className='w-10 text-right text-xs text-zinc-400'>{formatDuration(currentTime)}</div>
+					<div className='flex w-full items-center gap-2'>
+						<div className='w-9 text-right text-[11px] text-zinc-400 sm:w-10 sm:text-xs'>{formatDuration(currentTime)}</div>
 						<Slider
 							value={[currentTime]}
 							max={duration || 100}
@@ -142,7 +142,7 @@ export const PlaybackControls = () => {
 							onValueChange={handleSeek}
 							disabled={!currentSong}
 						/>
-						<div className='w-10 text-xs text-zinc-400'>{formatDuration(duration)}</div>
+						<div className='w-9 text-[11px] text-zinc-400 sm:w-10 sm:text-xs'>{formatDuration(duration)}</div>
 					</div>
 				</div>
 				{/* volume controls */}

@@ -1,8 +1,7 @@
 import { Router } from 'express'
 import {
     getAllSongs,
-    getMadeForYouSongs,
-    getFeaturedSongs,
+    getNewUploadSongs,
     getTrendingSongs,
     getLatestSongs,
     getRecentlyUpdatedSongs,
@@ -16,8 +15,7 @@ router.get("/", protectRoute, requireAdmin,getAllSongs);
 router.get("/latest", getLatestSongs);
 router.get("/recently-updated", getRecentlyUpdatedSongs);
 router.get("/search", searchSongs);
-router.get("/featured", getFeaturedSongs);
-router.get("/made-for-you", getMadeForYouSongs);
+router.get("/new-uploads", getNewUploadSongs);
 router.get("/trending", getTrendingSongs);
 
 export default router

@@ -10,11 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@base-ui/react": "^1.4.0",
+    "@base-ui/react": "^1.4.1",
     "@clerk/clerk-react": "^5.61.4",
     "@clerk/react": "^6.1.1",
     "@fontsource-variable/geist": "^5.2.8",
     "@fontsource-variable/lora": "^5.2.8",
+    "@fontsource-variable/roboto": "^5.2.10",
     "@tailwindcss/vite": "^4.2.2",
     "axios": "^1.13.6",
     "better-auth": "^1.6.6",
@@ -26,7 +27,7 @@
     "react-hot-toast": "^2.6.0",
     "react-resizable-panels": "^4.7.4",
     "react-router-dom": "^7.13.1",
-    "shadcn": "^4.3.0",
+    "shadcn": "^4.4.0",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^3.5.0",

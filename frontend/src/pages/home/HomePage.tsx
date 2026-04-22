@@ -10,32 +10,32 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 const HomePage = () => {
 
     const {
-        fetchFeaturedSongs,
-        fetchMadeForYouSongs,
+        fetchNewUploadSongs,
+        fetchRecentlyUpdatedSongs,
         fetchTrendingSongs,
         fetchAlbums,
         isLoading,
-        madeForYouSongs,
+        recentlyUpdatedSongs,
         trendingSongs,
-        featuredSongs,
+        newUploadSongs,
         albums,
     } = useMusicStore();
 
     const { initializeQueue } = usePlayerStore();
 
     useEffect(() => {
-        fetchFeaturedSongs();
-        fetchMadeForYouSongs();
+        fetchNewUploadSongs();
+        fetchRecentlyUpdatedSongs();
         fetchTrendingSongs();
         fetchAlbums();
-    }, [fetchAlbums, fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs]);
+    }, [fetchAlbums, fetchNewUploadSongs, fetchRecentlyUpdatedSongs, fetchTrendingSongs]);
 
     useEffect(() => {
-        if(madeForYouSongs.length > 0 && featuredSongs.length > 0 && trendingSongs.length > 0) {
-            const allSongs = [...madeForYouSongs, ...featuredSongs, ...trendingSongs];
+        if(recentlyUpdatedSongs.length > 0 && newUploadSongs.length > 0 && trendingSongs.length > 0) {
+            const allSongs = [...recentlyUpdatedSongs, ...newUploadSongs, ...trendingSongs];
             initializeQueue(allSongs);
         }
-    }, [initializeQueue,madeForYouSongs, trendingSongs, featuredSongs]);
+    }, [initializeQueue,recentlyUpdatedSongs, trendingSongs, newUploadSongs]);
 
 
     return (

@@ -32,37 +32,42 @@ const MainLayout = () => {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_8%,_rgba(0,0,0,0.24)_54%,_rgba(0,0,0,0.62)_100%)]" />
         </div>
 
-        <ResizablePanelGroup orientation="horizontal" className='relative z-10 flex flex-1 overflow-hidden p-2'>
-            <AudioPlayer />
-            {/* left sidebar */}
-            <ResizablePanel defaultSize={isMobile ? "0%" : "24%"} minSize={isMobile ? "0%" : "16%"} maxSize="30%">
-                <LeftSidebar />
-            </ResizablePanel>
+        <AudioPlayer />
+        {isMobile ? (
+            <div className="relative z-10 flex flex-1 overflow-hidden px-2 pb-2 pt-2">
+                <div className="min-h-0 flex-1">
+                    <Outlet />
+                </div>
+            </div>
+        ) : (
+            <ResizablePanelGroup orientation="horizontal" className='relative z-10 flex flex-1 overflow-hidden p-2'>
+                {/* left sidebar */}
+                <ResizablePanel defaultSize="24%" minSize="16%" maxSize="30%">
+                    <LeftSidebar />
+                </ResizablePanel>
 
-            <ResizableHandle className="w-2 rounded-lg bg-transparent transition-colors" /> 
+                <ResizableHandle className="w-2 rounded-lg bg-transparent transition-colors" /> 
 
-            {/* main content */}
-            <ResizablePanel defaultSize={isMobile ? "100%" : "52%"} minSize="36%">
-                <Outlet />
-            </ResizablePanel>
+                {/* main content */}
+                <ResizablePanel defaultSize="52%" minSize="36%">
+                    <Outlet />
+                </ResizablePanel>
 
-            {!isMobile && (
                 <> <ResizableHandle className="w-2 rounded-lg bg-transparent transition-colors" /> 
 
-            {/* right sidebar */}
-            <ResizablePanel
-                defaultSize={isMobile ? "0%" : "24%"}
-                minSize={isMobile ? "0%" : "16%"}
-                maxSize="28%"
-                collapsedSize={0}
-                collapsible
-            >
-                <FriendsActivity />
-            </ResizablePanel>
-                    </>
-            )}
-
-        </ResizablePanelGroup>
+                {/* right sidebar */}
+                <ResizablePanel
+                    defaultSize="24%"
+                    minSize="16%"
+                    maxSize="28%"
+                    collapsedSize={0}
+                    collapsible
+                >
+                    <FriendsActivity />
+                </ResizablePanel>
+                </>
+            </ResizablePanelGroup>
+        )}
         <PlaybackControls />
     </div>
 };
