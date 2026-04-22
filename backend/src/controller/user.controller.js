@@ -1,11 +1,9 @@
-import { getAuth } from "@clerk/express";
 import { User } from "../models/user.model.js";
 import { Message } from "../models/message.model.js";
 
 export const getAllUsers = async (req, res, next) => {
     try {
-        const { userId: currentUserId } = getAuth(req);
-        const users = await User.find({ clerkId: { $ne: currentUserId } });
+        const users = await User.find({ authUserId: { $ne: req.userId } });
         res.status(200).json(users);
     } catch (error) {
         next(error);
@@ -14,7 +12,7 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getMessages = async (req, res, next) => {
     try {
-        const { userId: myId } = getAuth(req);
+        const myId = req.userId;
         const {userId} = req.params;
 
         const messages = await Message.find({

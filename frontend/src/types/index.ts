@@ -40,7 +40,8 @@ export interface Message {
 
 export interface User {
 	_id: string;
-	clerkId: string;
+	authUserId: string;
+	email: string;
 	fullName: string;
 	imageUrl: string;
 }

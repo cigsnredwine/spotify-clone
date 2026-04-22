@@ -1,39 +1,26 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useAuth } from "@clerk/react";
-import { axiosInstance } from "@/lib/axios";
 import { Loader } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
-
-const updateApiToken = (token: string | null) => {
-  if (token) {
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete axiosInstance.defaults.headers.common["Authorization"];
-  }
-};
+import { authClient } from "@/lib/auth-client";
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { getToken, isLoaded, isSignedIn } = useAuth();
+  const { data: session, isPending } = authClient.useSession();
   const [loading, setLoading] = useState(true);
   const { checkAdminStatus, reset } = useAuthStore()
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (isPending) {
       return;
     }
 
     const initAuth = async () => {
       try {
-        const token = isSignedIn ? await getToken() : null;
-        updateApiToken(token);
-
-        if (token) {
+        if (session?.user) {
           await checkAdminStatus();
         } else {
           reset();
         }
       } catch (error) {
-        updateApiToken(null);
         reset();
         console.log("Error in initAuth", error);
       } finally {
@@ -41,7 +28,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     initAuth();
-  }, [checkAdminStatus, getToken, isLoaded, isSignedIn, reset]);
+  }, [checkAdminStatus, isPending, reset, session?.user]);
 
   if (loading) {
     return (

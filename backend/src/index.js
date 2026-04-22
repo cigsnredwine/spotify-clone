@@ -1,11 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-import { clerkMiddleware } from '@clerk/express';
 import fileUpload from "express-fileupload";
 import path from "path";
 import cors from "cors";
 import cron from "node-cron";
 import fs from "fs";
+import { toNodeHandler } from "better-auth/node";
 
 import { connectDB } from "./lib/db.js";
 import userRoutes from "./routes/user.route.js";
@@ -16,6 +16,7 @@ import albumRoutes from "./routes/album.route.js";
 import statsRoutes from "./routes/stats.route.js";
 import { createServer } from "http";
 import { initializeSocket } from "./lib/socket.js";
+import { auth } from "./lib/auth.js";
 
 
 dotenv.config();
@@ -46,12 +47,8 @@ app.use(cors({
     },
     credentials: true
 }))
+app.use("/api/auth", toNodeHandler(auth));
 app.use(express.json()); // to parse req.body
-app.use(
-    clerkMiddleware({
-        authorizedParties: CLIENT_URLS,
-    })
-); // add auth to req obj ==> req.auth
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: path.join(__dirname, "tmp"),
@@ -81,7 +78,7 @@ cron.schedule("0 * * * *", () => {
 
 
 app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/app-auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);

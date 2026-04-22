@@ -6,12 +6,13 @@ import { useMusicStore } from "@/stores/useMusicStore";
 import { HomeIcon, Library, MessageCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Show } from "@clerk/react";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const albumPreviewFallback = "/cover-images/khi nao em tien temp cover.jpg";
 
 const LeftSidebar = () => {
 	const { albums, fetchAlbums, isLoading } = useMusicStore();
+    const { isAuthenticated } = useAuthStore();
 
 	useEffect(() => {
 		fetchAlbums();
@@ -36,7 +37,7 @@ const LeftSidebar = () => {
 						<span className='hidden md:inline'>Home</span>
 					</Link>
 
-					<Show when="signed-in">
+					{isAuthenticated && (
 						<Link
 							to={"/chat"}
 							className={cn(
@@ -49,7 +50,7 @@ const LeftSidebar = () => {
 							<MessageCircle className='mr-2 size-5' />
 							<span className='hidden md:inline'>Messages</span>
 						</Link>
-					</Show>
+					)}
 				</div>
 			</div>
 

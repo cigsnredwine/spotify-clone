@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChatStore } from "@/stores/useChatStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { useUser } from "@clerk/react";
 import { HeadphonesIcon, Music, Users } from "lucide-react";
 import { useEffect } from "react";
 
@@ -33,27 +33,27 @@ const parseActivity = (activity: string | undefined) => {
 const FriendsActivity = () => {
 	const { users, fetchUsers, onlineUsers, userActivities, initSocket, disconnectSocket, socket, isConnected } =
 		useChatStore();
-	const { user } = useUser();
+	const { currentUser, isAuthenticated } = useAuthStore();
 	const { currentSong, isPlaying } = usePlayerStore();
 
 	useEffect(() => {
-		if (user) fetchUsers();
-	}, [fetchUsers, user]);
+		if (isAuthenticated) fetchUsers();
+	}, [fetchUsers, isAuthenticated]);
 
 	useEffect(() => {
-		if (!user?.id) {
+		if (!currentUser?.authUserId) {
 			return;
 		}
 
-		initSocket(user.id);
+		initSocket(currentUser.authUserId);
 
 		return () => {
 			disconnectSocket();
 		};
-	}, [disconnectSocket, initSocket, user?.id]);
+	}, [currentUser?.authUserId, disconnectSocket, initSocket]);
 
 	useEffect(() => {
-		if (!user?.id || !isConnected) {
+		if (!currentUser?.authUserId || !isConnected) {
 			return;
 		}
 
@@ -62,12 +62,12 @@ const FriendsActivity = () => {
 			: "Idle";
 
 		socket.emit("update_activity", {
-			userId: user.id,
+			userId: currentUser.authUserId,
 			activity,
 		});
-	}, [currentSong, isConnected, isPlaying, socket, user?.id]);
+	}, [currentSong, currentUser?.authUserId, isConnected, isPlaying, socket]);
 
-	const uniqueUsers = Array.from(new Map(users.map((user) => [user.clerkId, user])).values());
+	const uniqueUsers = Array.from(new Map(users.map((user) => [user.authUserId, user])).values());
 
 	return (
 		<div className='h-full bg-zinc-900 rounded-lg flex flex-col'>
@@ -78,12 +78,12 @@ const FriendsActivity = () => {
 				</div>
 			</div>
 
-			{!user && <LoginPrompt />}
+			{!isAuthenticated && <LoginPrompt />}
 
 			<ScrollArea className='flex-1'>
 				<div className='p-4 space-y-4'>
 					{uniqueUsers.map((user) => {
-						const activity = parseActivity(userActivities.get(user.clerkId));
+						const activity = parseActivity(userActivities.get(user.authUserId));
 
 						return (
 							<div
@@ -98,7 +98,7 @@ const FriendsActivity = () => {
 										</Avatar>
 										<div
 											className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-zinc-900 
-												${onlineUsers.has(user.clerkId) ? "bg-green-500" : "bg-zinc-500"}
+												${onlineUsers.has(user.authUserId) ? "bg-green-500" : "bg-zinc-500"}
 												`}
 											aria-hidden='true'
 										/>

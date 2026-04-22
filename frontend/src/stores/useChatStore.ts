@@ -52,7 +52,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	setSelectedUser: (user) =>
 		set((state) => ({
 			selectedUser: user,
-			messages: user ? state.messageCache[user.clerkId] ?? [] : [],
+			messages: user ? state.messageCache[user.authUserId] ?? [] : [],
 		})),
 
 	fetchUsers: async () => {
@@ -61,7 +61,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			const response = await axiosInstance.get("/users");
 			const userMap = new Map<string, User>();
 			(response.data as User[]).forEach((user) => {
-				userMap.set(user.clerkId, user);
+				userMap.set(user.authUserId, user);
 			});
 			const uniqueUsers = [...userMap.values()];
 			set({ users: uniqueUsers });
@@ -104,7 +104,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
 			socket.on("receive_message", (message: Message) => {
 				set((state) => {
-					const activeUserId = state.selectedUser?.clerkId;
+					const activeUserId = state.selectedUser?.authUserId;
 					const otherUserId = message.senderId;
 					const cachedMessages = otherUserId ? state.messageCache[otherUserId] ?? [] : [];
 					const updatedMessages = [...cachedMessages, message];
@@ -120,7 +120,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
 			socket.on("message_sent", (message: Message) => {
 				set((state) => {
-					const activeUserId = state.selectedUser?.clerkId;
+					const activeUserId = state.selectedUser?.authUserId;
 					const otherUserId = message.receiverId;
 					const cachedMessages = otherUserId ? state.messageCache[otherUserId] ?? [] : [];
 					const updatedMessages = [...cachedMessages, message];

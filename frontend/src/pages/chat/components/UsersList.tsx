@@ -5,7 +5,7 @@ import { useChatStore } from "@/stores/useChatStore";
 
 const UsersList = () => {
 	const { users, selectedUser, isLoading, setSelectedUser, onlineUsers } = useChatStore();
-	const uniqueUsers = Array.from(new Map(users.map((user) => [user.clerkId, user])).values());
+	const uniqueUsers = Array.from(new Map(users.map((user) => [user.authUserId, user])).values());
 
 	return (
 		<div className='border-r border-zinc-800'>
@@ -21,7 +21,7 @@ const UsersList = () => {
 									onClick={() => setSelectedUser(user)}
 									className={`flex items-center justify-center lg:justify-start gap-3 p-3 
 										rounded-lg cursor-pointer transition-colors
-                    ${selectedUser?.clerkId === user.clerkId ? "bg-zinc-800" : "hover:bg-zinc-800/50"}`}
+                    ${selectedUser?.authUserId === user.authUserId ? "bg-zinc-800" : "hover:bg-zinc-800/50"}`}
 								>
 									<div className='relative'>
 										<Avatar className='size-8 md:size-12'>
@@ -31,7 +31,7 @@ const UsersList = () => {
 										{/* online indicator */}
 										<div
 											className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ring-2 ring-zinc-900
-                        ${onlineUsers.has(user.clerkId) ? "bg-green-500" : "bg-zinc-500"}`}
+                        ${onlineUsers.has(user.authUserId) ? "bg-green-500" : "bg-zinc-500"}`}
 										/>
 									</div>
 

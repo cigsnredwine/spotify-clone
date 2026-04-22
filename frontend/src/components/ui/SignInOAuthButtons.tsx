@@ -1,23 +1,21 @@
-import { useSignIn } from "@clerk/react/legacy";
 import { Button } from "./button";
+import { Link } from "react-router-dom";
 
 const SignInOAuthButtons = () => {
-    const { signIn, isLoaded } = useSignIn()
-
-    if(!isLoaded) {
-        return null
-    }
-    const signInWithGoogle = async () => {
-        signIn.authenticateWithRedirect({
-            strategy: "oauth_google",
-            redirectUrl:"/sso-callback",
-            redirectUrlComplete:"/auth-callback",
-        })
-    }
-    return <Button onClick={signInWithGoogle} variant={"secondary"} className="w-full text-white border-zinc-200 h-11">
-        Continue with Google
-
-    </Button>
+    return (
+        <div className="flex items-center gap-2">
+            <Link to="/login">
+                <Button variant={"secondary"} className="text-white border-zinc-200 h-11">
+                    Sign In
+                </Button>
+            </Link>
+            <Link to="/signup">
+                <Button className="h-11">
+                    Create Account
+                </Button>
+            </Link>
+        </div>
+    )
 };
 
 export default SignInOAuthButtons

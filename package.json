@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/cigsnredwine/spotify-clone/issues"
   },
-  "homepage": "https://github.com/cigsnredwine/spotify-clone#readme"
+  "homepage": "https://github.com/cigsnredwine/spotify-clone#readme",
+  "dependencies": {
+    "@better-auth/infra": "^0.2.5"
+  }
 }
