@@ -2,18 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { Calendar, Music, Trash2 } from "lucide-react";
-import { useEffect } from "react";
 
 interface AlbumsTableProps {
 	canDelete?: boolean;
 }
 
 const AlbumsTable = ({ canDelete = true }: AlbumsTableProps) => {
-	const { albums, deleteAlbum, fetchAlbums } = useMusicStore();
-
-	useEffect(() => {
-		fetchAlbums();
-	}, [fetchAlbums]);
+	const { albums, deleteAlbum } = useMusicStore();
 
 	return (
 		<Table>

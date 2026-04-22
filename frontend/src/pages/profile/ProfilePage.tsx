@@ -124,7 +124,7 @@ const ProfilePage = () => {
 							<h1 className='text-3xl font-bold text-white'>Your Profile</h1>
 							<p className='text-zinc-400 mt-1'>Update your display name, profile image, and password.</p>
 						</div>
-						<Link to='/' className='text-sm text-blue-400 hover:underline'>
+						<Link to='/' className='text-sm text-primary hover:underline'>
 							Back home
 						</Link>
 					</div>

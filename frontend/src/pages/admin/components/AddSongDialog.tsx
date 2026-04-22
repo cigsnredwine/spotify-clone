@@ -37,9 +37,10 @@ const formatDetectedDuration = (durationInSeconds: number) => {
 
 interface AddSongDialogProps {
 	endpoint?: string;
+	onSuccess?: () => Promise<void> | void;
 }
 
-const AddSongDialog = ({ endpoint = "/admin/songs" }: AddSongDialogProps) => {
+const AddSongDialog = ({ endpoint = "/admin/songs", onSuccess }: AddSongDialogProps) => {
 	const { albums, fetchAlbums, fetchSongs } = useMusicStore();
 	const [songDialogOpen, setSongDialogOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -144,7 +145,11 @@ const AddSongDialog = ({ endpoint = "/admin/songs" }: AddSongDialogProps) => {
 				audio: null,
 				image: null,
 			});
-			await Promise.all([fetchSongs(), fetchAlbums()]);
+			if (onSuccess) {
+				await onSuccess();
+			} else {
+				await Promise.all([fetchSongs(), fetchAlbums()]);
+			}
 			setSongDialogOpen(false);
 			toast.success("Song added successfully");
 		} catch (error: any) {
@@ -158,7 +163,7 @@ const AddSongDialog = ({ endpoint = "/admin/songs" }: AddSongDialogProps) => {
 		<Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
 			<DialogTrigger
 				render={
-					<Button className='bg-blue-500 text-black hover:bg-blue-600'>
+					<Button className='bg-primary text-primary-foreground hover:bg-primary/90'>
 						<Plus className='mr-2 h-4 w-4' />
 						Add Song
 					</Button>
@@ -198,7 +203,7 @@ const AddSongDialog = ({ endpoint = "/admin/songs" }: AddSongDialogProps) => {
 						<div className='text-center'>
 							{files.image ? (
 								<div className='space-y-2'>
-									<div className='text-sm text-blue-500'>Image selected:</div>
+									<div className='text-sm text-primary'>Image selected:</div>
 									<div className='text-xs text-zinc-400'>{files.image.name.slice(0, 20)}</div>
 								</div>
 							) : (

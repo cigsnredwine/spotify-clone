@@ -7,6 +7,9 @@ import AdminPage from "./pages/admin/AdminPage"
 import NotFoundPage  from "./pages/404/NotFoundPage"
 import AuthPage from "./pages/auth/AuthPage"
 import ProfilePage from "./pages/profile/ProfilePage"
+import BrowsePage from "./pages/browse/BrowsePage"
+import SearchPage from "./pages/search/SearchPage"
+import UploadMusicPage from "./pages/upload-music/UploadMusicPage"
 
 
 function App() {
@@ -18,12 +21,15 @@ function App() {
         <Route path="/login" element={<AuthPage mode="sign-in" />} />
         <Route path="/signup" element={<AuthPage mode="sign-up" />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/upload-music" element={<UploadMusicPage />} />
         <Route path="/profile" element={<ProfilePage />} />
 
         <Route element={<MainLayout />}>
           <Route path='/' element={<HomePage />} />
           <Route path='/chat' element={<ChatPage />} />
           <Route path='/albums/:albumId' element={<AlbumPage />} />
+          <Route path='/browse/:sectionId' element={<BrowsePage />} />
+          <Route path='/search' element={<SearchPage />} />
           <Route path='*' element={<NotFoundPage />} />
         </Route>
       </Routes>

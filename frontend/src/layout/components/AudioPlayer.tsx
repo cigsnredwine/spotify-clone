@@ -19,6 +19,14 @@ const AudioPlayer = () => {
         const audio = audioRef.current;
 
         const handleEnded = () => {
+            const { repeatMode } = usePlayerStore.getState();
+
+            if(repeatMode === "one" && audio) {
+                audio.currentTime = 0;
+                void audio.play();
+                return;
+            }
+
             playNext();
         }
 

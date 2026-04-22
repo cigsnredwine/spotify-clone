@@ -1,11 +1,15 @@
 import {create} from "zustand";
 import type { Song } from "@/types";
 
+type RepeatMode = "off" | "all" | "one";
+
 interface PlayerStore {
     currentSong: Song | null;
     isPlaying: boolean;
     queue: Song[];
     currentIndex: number;
+    isShuffleEnabled: boolean;
+    repeatMode: RepeatMode;
     
     initializeQueue: (queue: Song[]) => void;
     playAlbum: (songs: Song[], startIndex?:number) => void;
@@ -13,13 +17,29 @@ interface PlayerStore {
     togglePlay: () => void;
     playNext: () => void;
     playPrevious: () => void;
+    toggleShuffle: () => void;
+    cycleRepeatMode: () => void;
 }
+
+const getRandomIndex = (queueLength: number, currentIndex: number) => {
+    if(queueLength <= 1) return currentIndex;
+
+    let nextIndex = currentIndex;
+
+    while(nextIndex === currentIndex) {
+        nextIndex = Math.floor(Math.random() * queueLength);
+    }
+
+    return nextIndex;
+};
 
 export const usePlayerStore = create<PlayerStore>((set,get) => ({
     currentSong: null,
     isPlaying: false,
     queue: [],
     currentIndex: -1,
+    isShuffleEnabled: false,
+    repeatMode: "off",
 
     initializeQueue: (songs: Song[]) => {
         set({
@@ -62,9 +82,19 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
     },
 
     playNext: () => {
-        const { currentIndex, queue } = get()
-        const nextIndex = currentIndex + 1;
-        // if there is next song to play, play it
+        const { currentIndex, queue, isShuffleEnabled, repeatMode } = get();
+
+        if(queue.length === 0) return;
+
+        if(repeatMode === "one" && currentIndex >= 0) {
+            set({ isPlaying: true });
+            return;
+        }
+
+        const nextIndex = isShuffleEnabled
+            ? getRandomIndex(queue.length, currentIndex)
+            : currentIndex + 1;
+
         if(nextIndex < queue.length) {
             const nextSong = queue[nextIndex];
 
@@ -73,8 +103,13 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
                 currentIndex: nextIndex,
                 isPlaying: true
             })
+        } else if(repeatMode === "all") {
+            set({
+                currentSong: queue[0],
+                currentIndex: 0,
+                isPlaying: true,
+            });
         } else {
-            // no next song
             set({ isPlaying: false });
         }
 
@@ -96,5 +131,22 @@ export const usePlayerStore = create<PlayerStore>((set,get) => ({
             // no previous song
             set({ isPlaying: false });
         }
+    },
+
+    toggleShuffle: () => {
+        set((state) => ({
+            isShuffleEnabled: !state.isShuffleEnabled,
+        }));
+    },
+
+    cycleRepeatMode: () => {
+        const repeatModes: RepeatMode[] = ["off", "all", "one"];
+        const currentMode = get().repeatMode;
+        const currentModeIndex = repeatModes.indexOf(currentMode);
+        const nextMode = repeatModes[(currentModeIndex + 1) % repeatModes.length];
+
+        set({
+            repeatMode: nextMode,
+        });
     },
 }))

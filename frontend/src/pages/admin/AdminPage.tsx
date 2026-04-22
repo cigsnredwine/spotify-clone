@@ -32,7 +32,7 @@ const AdminPage = () => {
     if (isLoading || !hasCheckedAdmin) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-linear-to-b from-zinc-900 via-zinc-900 to-black text-zinc-100">
-                <Loader className="size-8 animate-spin text-blue-500" />
+                <Loader className="size-8 animate-spin text-primary" />
             </div>
         )
     }

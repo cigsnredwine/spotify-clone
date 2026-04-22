@@ -130,7 +130,7 @@ const AuthPage = ({ mode }: AuthPageProps) => {
 
 					<p className='mt-4 text-sm text-zinc-400'>
 						{isSignUp ? "Already have an account?" : "Need an account?"}{" "}
-						<Link to={isSignUp ? "/login" : "/signup"} className='text-blue-400 hover:underline'>
+						<Link to={isSignUp ? "/login" : "/signup"} className='text-primary hover:underline'>
 							{isSignUp ? "Sign in" : "Create one"}
 						</Link>
 					</p>

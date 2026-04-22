@@ -1,24 +1,34 @@
 import type { Song } from "@/types";
-import SectionGridSkeleton from "@/components/ui/skeletons/SectionGridSkeleton";
+import SongsSectionSkeleton from "@/components/ui/skeletons/SongsSectionSkeleton";
 import { Button } from "@/components/ui/button";
 import PlayButton from "./PlayButton";
+import { Link } from "react-router-dom";
 
-type SectionGridProps = {
+type SongsSectionProps = {
     title:string,
     songs:Song[],
     isLoading:boolean;
+    showAllHref?: string;
+    hideShowAll?: boolean;
+    hideTitle?: boolean;
 }
 
-const SectionGrid = ({ title, songs, isLoading }: SectionGridProps) => {
-    if (isLoading) return <SectionGridSkeleton />
+const SongsSection = ({ title, songs, isLoading, showAllHref, hideShowAll = false, hideTitle = false }: SongsSectionProps) => {
+    if (isLoading) return <SongsSectionSkeleton />
   return (
     <div className="mb-8">
-        <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold sm:text-2xl">{title}</h2>
-            <Button variant="link" className='h-auto p-0 text-sm text-zinc-400 hover:text-white'>
-                Show all
-            </Button>
-        </div>
+        {!hideTitle || (!hideShowAll && showAllHref) ? (
+            <div className="mb-4 flex items-center justify-between">
+                {!hideTitle ? <h2 className="text-xl font-bold sm:text-2xl">{title}</h2> : <div />}
+                {!hideShowAll && showAllHref ? (
+                    <Link to={showAllHref}>
+                        <Button variant="link" className='h-auto p-0 text-sm text-zinc-400 hover:text-white'>
+                            Show all
+                        </Button>
+                    </Link>
+                ) : null}
+            </div>
+        ) : null}
 
         <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4'>
             {songs.map((song) => (
@@ -45,4 +55,4 @@ const SectionGrid = ({ title, songs, isLoading }: SectionGridProps) => {
   )
 }
 
-export default SectionGrid
+export default SongsSection

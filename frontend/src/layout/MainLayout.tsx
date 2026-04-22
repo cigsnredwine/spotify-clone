@@ -19,16 +19,27 @@ const MainLayout = () => {
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
+    return <div className="relative flex h-screen flex-col overflow-hidden bg-background text-foreground">
+        <div
+            className="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+        >
+            <div
+                className="absolute inset-[-8%] bg-cover bg-center opacity-78 saturate-90"
+                style={{ backgroundImage: "url('/lyre-bg-3.jpeg')" }}
+            />
+            <div className="absolute inset-0 bg-black/80" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_8%,_rgba(0,0,0,0.24)_54%,_rgba(0,0,0,0.62)_100%)]" />
+        </div>
 
-    return <div className="h-screen bg-black text-white flex flex-col">
-        <ResizablePanelGroup orientation="horizontal" className='flex-1 flex overflow-hidden p-2'>
+        <ResizablePanelGroup orientation="horizontal" className='relative z-10 flex flex-1 overflow-hidden p-2'>
             <AudioPlayer />
             {/* left sidebar */}
             <ResizablePanel defaultSize={isMobile ? "0%" : "24%"} minSize={isMobile ? "0%" : "16%"} maxSize="30%">
                 <LeftSidebar />
             </ResizablePanel>
 
-            <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" /> 
+            <ResizableHandle className="w-2 rounded-lg bg-transparent transition-colors" /> 
 
             {/* main content */}
             <ResizablePanel defaultSize={isMobile ? "100%" : "52%"} minSize="36%">
@@ -36,7 +47,7 @@ const MainLayout = () => {
             </ResizablePanel>
 
             {!isMobile && (
-                <> <ResizableHandle className="w-2 bg-black rounded-lg transition-colors" /> 
+                <> <ResizableHandle className="w-2 rounded-lg bg-transparent transition-colors" /> 
 
             {/* right sidebar */}
             <ResizablePanel

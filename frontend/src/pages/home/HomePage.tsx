@@ -1,14 +1,25 @@
 import { useEffect } from "react";
 import Topbar from "../../components/ui/Topbar"
-import FeaturedSection from "./components/FeaturedSection";
+import NewUploadsSection from "./components/NewUploadsSection";
+import LatestAlbumsSection from "./components/LatestAlbumsSection";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import SectionGrid from "./components/SectionGrid";
+import SongsSection from "./components/SongsSection";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 
 const HomePage = () => {
 
-    const { fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs, isLoading, madeForYouSongs, trendingSongs, featuredSongs } = useMusicStore();
+    const {
+        fetchFeaturedSongs,
+        fetchMadeForYouSongs,
+        fetchTrendingSongs,
+        fetchAlbums,
+        isLoading,
+        madeForYouSongs,
+        trendingSongs,
+        featuredSongs,
+        albums,
+    } = useMusicStore();
 
     const { initializeQueue } = usePlayerStore();
 
@@ -16,7 +27,8 @@ const HomePage = () => {
         fetchFeaturedSongs();
         fetchMadeForYouSongs();
         fetchTrendingSongs();
-    }, [fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs]);
+        fetchAlbums();
+    }, [fetchAlbums, fetchFeaturedSongs, fetchMadeForYouSongs, fetchTrendingSongs]);
 
     useEffect(() => {
         if(madeForYouSongs.length > 0 && featuredSongs.length > 0 && trendingSongs.length > 0) {
@@ -27,18 +39,25 @@ const HomePage = () => {
 
 
     return (
-        <main className='rounded-md overflow-hidden h-full bg-linear-to-b from-zinc-800 to-zinc-900'>
+        <main className='h-full overflow-hidden rounded-xl border border-white/8 bg-black/30 backdrop-blur-[6px] shadow-[0_14px_36px_rgba(0,0,0,0.12)]'>
             <Topbar />
             <ScrollArea className="h-[calc(100vh-180px)]">
                 <div className="p-4 sm:p-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold mb-6">
-                        Good Afternoon
-                    </h1>
+                    <section className="mb-10 rounded-2xl border border-white/8 bg-black/26 px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] sm:px-8 sm:py-10">
+                        <div className="max-w-3xl">
+                            <p className="text-5xl font-bold tracking-[-0.002em] text-white sm:text-5xl">
+                                Lyre
+                            </p>
+                            <h1 className="mt-4 max-w-2xl text-2xl font-medium tracking-tight text-zinc-400 sm:text-4xl">
+                                Hear songs before they&apos;re released
+                            </h1>
+                        </div>
+                    </section>
 
-                    <FeaturedSection/>
+                    <NewUploadsSection title="New Uploads" />
                     <div className="space-y-8">
-                        <SectionGrid title="Made For You" songs={madeForYouSongs} isLoading={isLoading} />
-                        <SectionGrid title="Trending" songs={trendingSongs} isLoading={isLoading}/>
+                        <SongsSection title="Recently Updated" songs={trendingSongs} isLoading={isLoading} showAllHref="/browse/recently-updated" />
+                        <LatestAlbumsSection title="Latest Albums & EPs" albums={albums} isLoading={isLoading} showAllHref="/browse/latest-albums" />
                     </div>
                 </div>
             </ScrollArea>

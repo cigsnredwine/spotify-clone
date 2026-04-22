@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useMusicStore } from "@/stores/useMusicStore"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,103 @@ export const formatDuration = (duration: number) => {
     const seconds = Math.floor(duration % 60);
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
 }
+
+const fallbackGradientStyle: React.CSSProperties = {
+    backgroundImage: "linear-gradient(to bottom, rgb(55 147 166 / 0.82), rgb(24 24 27 / 0.82) 52%, rgb(24 24 27) 100%)",
+};
+
+const clampChannel = (value: number) => Math.max(0, Math.min(255, Math.round(value)));
+
+const toRgb = (red: number, green: number, blue: number, alpha = 1) =>
+    `rgb(${clampChannel(red)} ${clampChannel(green)} ${clampChannel(blue)} / ${alpha})`;
+
 const AlbumPage = () => {
    const { albumId } = useParams();
    const { fetchAlbumById, currentAlbum, isLoading } = useMusicStore();
    const {currentSong, isPlaying, playAlbum, togglePlay} = usePlayerStore();
+   const [gradientStyle, setGradientStyle] = useState<React.CSSProperties>(fallbackGradientStyle);
 
    useEffect(() => {
       if(albumId) fetchAlbumById(albumId);
    }, [fetchAlbumById, albumId])
+
+   useEffect(() => {
+    if (!currentAlbum?.imageUrl) {
+        setGradientStyle(fallbackGradientStyle);
+        return;
+    }
+
+    let isCancelled = false;
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = currentAlbum.imageUrl;
+
+    image.onload = () => {
+        try {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d", { willReadFrequently: true });
+
+            if (!context) {
+                throw new Error("Canvas not available");
+            }
+
+            const sampleSize = 24;
+            canvas.width = sampleSize;
+            canvas.height = sampleSize;
+            context.drawImage(image, 0, 0, sampleSize, sampleSize);
+
+            const { data } = context.getImageData(0, 0, sampleSize, sampleSize);
+
+            let redTotal = 0;
+            let greenTotal = 0;
+            let blueTotal = 0;
+            let pixelCount = 0;
+
+            for (let index = 0; index < data.length; index += 4) {
+                const alpha = data[index + 3];
+
+                if (alpha < 128) continue;
+
+                redTotal += data[index];
+                greenTotal += data[index + 1];
+                blueTotal += data[index + 2];
+                pixelCount += 1;
+            }
+
+            if (!pixelCount) {
+                throw new Error("No pixels sampled");
+            }
+
+            const red = redTotal / pixelCount;
+            const green = greenTotal / pixelCount;
+            const blue = blueTotal / pixelCount;
+
+            const vividTop = toRgb(red * 1.06, green * 1.04, blue * 1.08, 0.88);
+            const mutedMiddle = toRgb(red * 0.5, green * 0.52, blue * 0.56, 0.8);
+            const deepBottom = toRgb(red * 0.12, green * 0.13, blue * 0.15, 1);
+
+            if (!isCancelled) {
+                setGradientStyle({
+                    backgroundImage: `linear-gradient(to bottom, ${vividTop} 0%, ${mutedMiddle} 46%, ${deepBottom} 100%)`,
+                });
+            }
+        } catch {
+            if (!isCancelled) {
+                setGradientStyle(fallbackGradientStyle);
+            }
+        }
+    };
+
+    image.onerror = () => {
+        if (!isCancelled) {
+            setGradientStyle(fallbackGradientStyle);
+        }
+    };
+
+    return () => {
+        isCancelled = true;
+    };
+   }, [currentAlbum?.imageUrl]);
 
    if(isLoading || !currentAlbum) return null
 
@@ -40,13 +129,14 @@ const AlbumPage = () => {
    }
    
   return (
-    <div className='h-full'>
+    <div className='h-full overflow-hidden rounded-xl border border-white/8 bg-black/30 backdrop-blur-[6px] shadow-[0_14px_36px_rgba(0,0,0,0.12)]'>
         <ScrollArea className='h-full'>
             {/* Main content */}
             <div className='relative min-h-full'>
                 {/* bg gradient */}
-                <div className='absolute inset-0 bg-linear-to-b from-[#3793a6]/80 via-zinc-900/80
-                to-zinc-900 pointer-events-home'
+                <div
+                className='pointer-events-none absolute inset-0'
+                style={gradientStyle}
                 aria-hidden='true'
                 />
 
@@ -76,12 +166,12 @@ const AlbumPage = () => {
                         <Button
                         onClick={handlePlayAlbum}
                         size='icon'
-                        className='w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-500 hover:scale-105 transition-all'
+                        className='h-14 w-14 bg-primary transition-all hover:scale-105 hover:bg-primary/90'
                         >
                             {isPlaying && currentAlbum?.songs.some(song => song._id === currentSong?._id) ? (
-                                <Pause className='h-7 w-7 text-black' />
+                                <Pause className='size-5 text-black' />
                             ) : (
-                                <Play className='h-7 w-7 text-black' />
+                                <Play className='size-5 text-black' />
                             )}
                         </Button>
                     </div>
@@ -112,7 +202,7 @@ const AlbumPage = () => {
                                     'grid grid-cols-[16px_4fr_2fr_1fr] gap-4 px-4 py-2 text-sm text-zinc-400hover:bg-white/5 rounded-md group cursor-pointer'}>
                                      <div className='flex items-center justify-center'>
                                         {isCurrentSong && isPlaying ? (
-                                            <div className={"size-4 text-blue-500"}>♭</div>
+                                            <Pause className='size-4 text-primary' />
                                         ): (
                                             <span className='group-hover:hidden'>{index + 1}</span>
                                         )}

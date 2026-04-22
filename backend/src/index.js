@@ -10,6 +10,7 @@ import { toNodeHandler } from "better-auth/node";
 import { connectDB } from "./lib/db.js";
 import userRoutes from "./routes/user.route.js";
 import adminRoutes from "./routes/admin.route.js";
+import uploadRoutes from "./routes/upload.route.js";
 import authRoutes from "./routes/auth.route.js";
 import songRoutes from "./routes/song.route.js";
 import albumRoutes from "./routes/album.route.js";
@@ -80,6 +81,7 @@ cron.schedule("0 * * * *", () => {
 app.use("/api/users", userRoutes);
 app.use("/api/app-auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/upload", uploadRoutes);
 app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/album", albumRoutes);

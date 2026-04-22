@@ -6,21 +6,26 @@ import AddSongDialog from "./AddSongDialog";
 interface SongsTabContentProps {
 	canDelete?: boolean;
 	uploadEndpoint?: string;
+	onUploadSuccess?: () => Promise<void> | void;
 }
 
-const SongsTabContent = ({ canDelete = true, uploadEndpoint = "/admin/songs" }: SongsTabContentProps) => {
+const SongsTabContent = ({
+	canDelete = true,
+	uploadEndpoint = "/admin/songs",
+	onUploadSuccess,
+}: SongsTabContentProps) => {
 	return (
 		<Card>
 			<CardHeader>
 				<div className='flex items-center justify-between'>
 					<div>
 						<CardTitle className='flex items-center gap-2'>
-							<Music className='size-5 text-blue-500' />
+							<Music className='size-5 text-primary' />
 							Songs Library
 						</CardTitle>
 						<CardDescription>Manage your music tracks</CardDescription>
 					</div>
-					<AddSongDialog endpoint={uploadEndpoint} />
+					<AddSongDialog endpoint={uploadEndpoint} onSuccess={onUploadSuccess} />
 				</div>
 			</CardHeader>
 			<CardContent>

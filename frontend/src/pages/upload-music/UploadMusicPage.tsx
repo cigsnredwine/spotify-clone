@@ -5,14 +5,28 @@ import AlbumsTabContent from "@/pages/admin/components/AlbumsTabContent";
 import { Album, Music } from "lucide-react";
 import { useEffect } from "react";
 import { useMusicStore } from "@/stores/useMusicStore";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { Navigate } from "react-router-dom";
 
 const UploadMusicPage = () => {
-	const { fetchAlbums, fetchSongs } = useMusicStore();
+	const { hasCheckedAdmin, isAuthenticated, checkAdminStatus, isLoading: isAuthLoading } = useAuthStore();
+	const { fetchUploadedAlbums, fetchUploadedSongs } = useMusicStore();
 
 	useEffect(() => {
-		fetchAlbums();
-		fetchSongs();
-	}, [fetchAlbums, fetchSongs]);
+		if (!hasCheckedAdmin) {
+			checkAdminStatus();
+		}
+	}, [checkAdminStatus, hasCheckedAdmin]);
+
+	useEffect(() => {
+		if (!isAuthenticated) return;
+		fetchUploadedAlbums();
+		fetchUploadedSongs();
+	}, [fetchUploadedAlbums, fetchUploadedSongs, isAuthenticated]);
+
+	if (!isAuthLoading && hasCheckedAdmin && !isAuthenticated) {
+		return <Navigate to="/login" replace />;
+	}
 
 	return (
 		<div className="min-h-screen bg-linear-to-b from-zinc-900 via-zinc-900 to-black p-8 text-zinc-100">
@@ -32,11 +46,21 @@ const UploadMusicPage = () => {
 				</TabsList>
 
 				<TabsContent value="songs">
-					<SongsTabContent canDelete={false} uploadEndpoint="/upload/songs" />
+					<SongsTabContent
+						canDelete={false}
+						uploadEndpoint="/upload/songs"
+						onUploadSuccess={async () => {
+							await Promise.all([fetchUploadedSongs(), fetchUploadedAlbums()]);
+						}}
+					/>
 				</TabsContent>
 
 				<TabsContent value="albums">
-					<AlbumsTabContent canDelete={false} uploadEndpoint="/upload/albums" />
+					<AlbumsTabContent
+						canDelete={false}
+						uploadEndpoint="/upload/albums"
+						onUploadSuccess={fetchUploadedAlbums}
+					/>
 				</TabsContent>
 			</Tabs>
 		</div>

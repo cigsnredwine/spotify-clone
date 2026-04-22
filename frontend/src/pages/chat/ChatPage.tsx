@@ -7,6 +7,7 @@ import ChatHeader from "./components/ChatHeader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import MessageInput from "./components/MessageInput";
+import LyreLogo from "@/components/ui/LyreLogo";
 
 const formatTime = (date: string) => {
 	return new Date(date).toLocaleTimeString("en-US", {
@@ -29,7 +30,7 @@ const ChatPage = () => {
 	}, [selectedUser, fetchMessages]);
 
 	return (
-		<main className='h-full rounded-lg bg-gradient-to-b from-zinc-800 to-zinc-900 overflow-hidden'>
+		<main className='h-full overflow-hidden rounded-xl border border-white/8 bg-black/30 backdrop-blur-[6px] shadow-[0_14px_36px_rgba(0,0,0,0.12)]'>
 			<Topbar />
 
 			<div className='grid lg:grid-cols-[300px_1fr] grid-cols-[80px_1fr] h-[calc(100vh-180px)]'>
@@ -68,7 +69,7 @@ const ChatPage = () => {
 
 											<div
 												className={`rounded-lg p-3 max-w-[70%]
-													${message.senderId === currentUser?.authUserId ? "bg-blue-500" : "bg-zinc-800"}
+													${message.senderId === currentUser?.authUserId ? "bg-primary text-primary-foreground" : "bg-zinc-800"}
 												`}
 											>
 												<p className='text-sm'>{message.content}</p>
@@ -95,7 +96,7 @@ export default ChatPage;
 
 const NoConversationPlaceholder = () => (
 	<div className='flex flex-col items-center justify-center h-full space-y-6'>
-		<img src='/spotify-512.png' alt='Lyre' className='size-16' />
+		<LyreLogo markClassName='size-16 text-[3.5rem]' />
 		<div className='text-center'>
 			<h3 className='text-zinc-300 text-lg font-medium mb-1'>No conversation selected</h3>
 			<p className='text-zinc-500 text-sm'>Choose a friend to start chatting</p>

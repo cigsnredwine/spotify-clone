@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import LyreLogo from "@/components/ui/LyreLogo";
 
 interface HeaderProps {
   title?: string;
@@ -23,7 +24,7 @@ const Header = ({
     <div className='mb-8 flex items-start justify-between gap-4'>
       <div className='flex items-center gap-3 mb-8'>
         <Link to='/' className='rounded-lg'>
-          <img src='/spotify-512.png' alt='Spotify logo' className='size-10 text-black' />
+          <LyreLogo markClassName='size-10 text-[2.15rem]' />
         </Link>
       <div>
         <h1 className='text-3xl font-bold'>{title}</h1>

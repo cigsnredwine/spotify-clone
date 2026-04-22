@@ -11,6 +11,55 @@ export const getAllSongs = async(req, res, next) => {
     }
 }
 
+export const getLatestSongs = async (req, res, next) => {
+    try {
+        const songs = await Song.find().sort({ createdAt: -1 });
+        res.json(songs);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getRecentlyUpdatedSongs = async (req, res, next) => {
+    try {
+        const songs = await Song.find().sort({ updatedAt: -1 });
+        res.json(songs);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const searchSongs = async (req, res, next) => {
+    try {
+        const query = String(req.query.q || "").trim();
+
+        if (!query) {
+            return res.json({ songs: [], artists: [] });
+        }
+
+        const regex = new RegExp(query, "i");
+        const songs = await Song.find({
+            $or: [
+                { title: regex },
+                { artist: regex },
+                { artists: { $elemMatch: { $regex: regex } } },
+            ],
+        }).sort({ createdAt: -1 });
+
+        const artists = Array.from(
+            new Set(
+                songs.flatMap((song) => (song.artists?.length ? song.artists : song.artist.split(",")))
+                    .map((artist) => artist.trim())
+                    .filter((artist) => artist && regex.test(artist))
+            )
+        );
+
+        res.json({ songs, artists });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const getFeaturedSongs = async (req, res, next) => {
     try {
         // fetch 6 random songs using mongodb's aggregation pipeline

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Laptop2, ListMusic, Mic2, Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume1 } from "lucide-react";
+import { Pause, Play, Repeat, Shuffle, SkipBack, SkipForward, Volume1 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { formatDuration } from "@/pages/album/AlbumPage";
 
@@ -9,7 +9,17 @@ const getSliderValue = (value: number | readonly number[]) =>
 	Array.isArray(value) ? value[0] ?? 0 : value;
 
 export const PlaybackControls = () => {
-	const { currentSong, isPlaying, togglePlay, playNext, playPrevious } = usePlayerStore();
+	const {
+		currentSong,
+		isPlaying,
+		togglePlay,
+		playNext,
+		playPrevious,
+		isShuffleEnabled,
+		repeatMode,
+		toggleShuffle,
+		cycleRepeatMode,
+	} = usePlayerStore();
 
 	const [volume, setVolume] = useState(75);
 	const [currentTime, setCurrentTime] = useState(0);
@@ -23,21 +33,16 @@ export const PlaybackControls = () => {
 		if (!audio) return;
 
 		const updateTime = () => setCurrentTime(audio.currentTime);
-		const updateDuration = () => setDuration(audio.duration);
+		const updateDuration = () => setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
 
 		audio.addEventListener("timeupdate", updateTime);
 		audio.addEventListener("loadedmetadata", updateDuration);
-
-		const handleEnded = () => {
-			usePlayerStore.setState({ isPlaying: false });
-		};
-
-		audio.addEventListener("ended", handleEnded);
+		audio.addEventListener("durationchange", updateDuration);
 
 		return () => {
 			audio.removeEventListener("timeupdate", updateTime);
 			audio.removeEventListener("loadedmetadata", updateDuration);
-			audio.removeEventListener("ended", handleEnded);
+			audio.removeEventListener("durationchange", updateDuration);
 		};
 	}, [currentSong]);
 
@@ -49,7 +54,7 @@ export const PlaybackControls = () => {
 	};
 
 	return (
-		<footer className='h-20 sm:h-24 bg-zinc-900 border-t border-zinc-800 px-4'>
+		<footer className='h-24 border-t border-white/8 bg-black/34 px-4 backdrop-blur-[6px]'>
 			<div className='mx-auto flex h-full max-w-[1800px] items-center justify-between gap-4'>
 				{/* currently playing song */}
 				<div className='hidden w-[30%] min-w-[180px] items-center gap-4 sm:flex'>
@@ -78,7 +83,11 @@ export const PlaybackControls = () => {
 						<Button
 							size='icon'
 							variant='ghost'
-							className='hidden sm:inline-flex hover:text-white text-zinc-400'
+							className={`hidden sm:inline-flex hover:text-white ${
+								isShuffleEnabled ? "text-white" : "text-zinc-400"
+							}`}
+							onClick={toggleShuffle}
+							disabled={!currentSong}
 						>
 							<Shuffle className='h-4 w-4' />
 						</Button>
@@ -95,11 +104,11 @@ export const PlaybackControls = () => {
 
 						<Button
 							size='icon'
-							className='bg-white hover:bg-white/80 text-black rounded-full h-8 w-8'
+							className='bg-primary transition-all hover:scale-105 hover:bg-primary/90'
 							onClick={togglePlay}
 							disabled={!currentSong}
 						>
-							{isPlaying ? <Pause className='h-5 w-5' /> : <Play className='h-5 w-5' />}
+							{isPlaying ? <Pause className='size-5 text-black' /> : <Play className='size-5 text-black' />}
 						</Button>
 						<Button
 							size='icon'
@@ -113,37 +122,32 @@ export const PlaybackControls = () => {
 						<Button
 							size='icon'
 							variant='ghost'
-							className='hidden sm:inline-flex hover:text-white text-zinc-400'
+							className={`hidden sm:inline-flex hover:text-white ${
+								repeatMode !== "off" ? "text-white" : "text-zinc-400"
+							}`}
+							onClick={cycleRepeatMode}
+							disabled={!currentSong}
 						>
 							<Repeat className='h-4 w-4' />
 						</Button>
 					</div>
 
-					<div className='hidden sm:flex items-center gap-2 w-full'>
-						<div className='text-xs text-zinc-400'>{formatDuration(currentTime)}</div>
+					<div className='flex items-center gap-2 w-full px-2 sm:px-0'>
+						<div className='w-10 text-right text-xs text-zinc-400'>{formatDuration(currentTime)}</div>
 						<Slider
 							value={[currentTime]}
 							max={duration || 100}
 							step={1}
 							className='w-full hover:cursor-grab active:cursor-grabbing'
 							onValueChange={handleSeek}
+							disabled={!currentSong}
 						/>
-						<div className='text-xs text-zinc-400'>{formatDuration(duration)}</div>
+						<div className='w-10 text-xs text-zinc-400'>{formatDuration(duration)}</div>
 					</div>
 				</div>
 				{/* volume controls */}
-				<div className='hidden w-[34%] min-w-[340px] items-center justify-end gap-3 pr-16 sm:flex'>
-					<Button size='icon' variant='ghost' className='hover:text-white text-zinc-400'>
-						<Mic2 className='h-4 w-4' />
-					</Button>
-					<Button size='icon' variant='ghost' className='hover:text-white text-zinc-400'>
-						<ListMusic className='h-4 w-4' />
-					</Button>
-					<Button size='icon' variant='ghost' className='hover:text-white text-zinc-400'>
-						<Laptop2 className='h-4 w-4' />
-					</Button>
-
-					<div className='flex shrink-0 items-center gap-2 pl-2'>
+				<div className='hidden w-[28%] min-w-[220px] items-center justify-end pr-18 sm:flex'>
+					<div className='flex w-full max-w-[170px] shrink-0 items-center gap-2'>
 						<Button size='icon' variant='ghost' className='hover:text-white text-zinc-400'>
 							<Volume1 className='h-4 w-4' />
 						</Button>
@@ -152,7 +156,7 @@ export const PlaybackControls = () => {
 							value={[volume]}
 							max={100}
 							step={1}
-							className='w-40 shrink-0 hover:cursor-grab active:cursor-grabbing [&_[data-slot=slider-track]]:bg-zinc-600 [&_[data-slot=slider-range]]:bg-blue-500'
+							className='w-full shrink-0 hover:cursor-grab active:cursor-grabbing [&_[data-slot=slider-track]]:bg-muted [&_[data-slot=slider-range]]:bg-primary'
 							onValueChange={(value) => {
 								const nextVolume = Array.isArray(value) ? value[0] : value;
 								setVolume(nextVolume);

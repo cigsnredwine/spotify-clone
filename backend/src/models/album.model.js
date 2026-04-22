@@ -17,6 +17,12 @@ const albumSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    uploadedByUserId: {
+        type: String,
+        required: false,
+        index: true,
+        default: null,
+    },
     songs: [
         {
             type: mongoose.Schema.Types.ObjectId,

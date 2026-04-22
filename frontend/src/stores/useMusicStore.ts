@@ -22,6 +22,8 @@ interface MusicStore {
     fetchTrendingSongs: () => Promise<void>;
     fetchStats:() => Promise<void>;
     fetchSongs: () => Promise<void>;
+    fetchUploadedSongs: () => Promise<void>;
+    fetchUploadedAlbums: () => Promise<void>;
     deleteSong: (id: string) => Promise<void>;
     deleteAlbum: (id: string) => Promise<void>;
 }
@@ -54,6 +56,36 @@ export const useMusicStore = create<MusicStore>((set) => ({
             set({error: error.response.data.message});         
         } finally {
             set({ isLoading: false});
+        }
+    },
+
+    fetchUploadedSongs: async () => {
+        set({
+            isLoading: true,
+            error: null,
+        });
+        try {
+            const response = await axiosInstance.get("/upload/songs");
+            set({ songs: response.data });
+        } catch (error: any) {
+            set({ error: error.response?.data?.message ?? "Failed to fetch your uploaded songs" });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    fetchUploadedAlbums: async () => {
+        set({
+            isLoading: true,
+            error: null,
+        });
+        try {
+            const response = await axiosInstance.get("/upload/albums");
+            set({ albums: response.data });
+        } catch (error: any) {
+            set({ error: error.response?.data?.message ?? "Failed to fetch your uploaded albums" });
+        } finally {
+            set({ isLoading: false });
         }
     },
     fetchStats: async () => {

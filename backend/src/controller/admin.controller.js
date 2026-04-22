@@ -54,6 +54,7 @@ export const createSong = async (req, res, next) => {
             newAlbumArtist,
             newAlbumReleaseYear,
         } = req.body
+        const uploaderId = req.userId;
         const audioFile = req.files.audioFile;
         const imageFile = req.files.imageFile;
 
@@ -86,6 +87,7 @@ export const createSong = async (req, res, next) => {
                     imageUrl,
                     releaseYear,
                     songs: [],
+                    uploadedByUserId: uploaderId,
                 });
             }
 
@@ -100,6 +102,7 @@ export const createSong = async (req, res, next) => {
             imageUrl,
             albumId: resolvedAlbumId,
             duration: resolvedDuration,
+            uploadedByUserId: uploaderId,
         })
 
         await song.save();
@@ -146,6 +149,7 @@ export const deleteSong = async (req,res,next) => {
 
 export const createAlbum = async(req,res,next) => {
     try {
+        const uploaderId = req.userId;
         const { title, artist, releaseYear }= req.body
         const { imageFile } = req.files;
 
@@ -156,6 +160,7 @@ export const createAlbum = async(req,res,next) => {
             artist,
             imageUrl,
             releaseYear,
+            uploadedByUserId: uploaderId,
         })
 
         await album.save();
@@ -176,6 +181,24 @@ export const deleteAlbum = async(req,res,next) => {
         res.status(200).json({message: "Album deleted successfully"});
     } catch (error) {
         console.log("Error in deleteAlbum", error);
+        next(error);
+    }
+}
+
+export const getUploadedSongs = async (req, res, next) => {
+    try {
+        const songs = await Song.find({ uploadedByUserId: req.userId }).sort({ createdAt: -1 });
+        res.status(200).json(songs);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getUploadedAlbums = async (req, res, next) => {
+    try {
+        const albums = await Album.find({ uploadedByUserId: req.userId }).sort({ createdAt: -1 });
+        res.status(200).json(albums);
+    } catch (error) {
         next(error);
     }
 }
