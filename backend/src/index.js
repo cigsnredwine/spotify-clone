@@ -37,6 +37,7 @@ const isAllowedOrigin = (origin) => {
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
+const MAX_UPLOAD_SIZE_BYTES = 50 * 1024 * 1024;
 
 app.use(cors({
     origin(origin, callback) {
@@ -54,8 +55,10 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: path.join(__dirname, "tmp"),
     createParentPath: true,
+    abortOnLimit: true,
+    responseOnLimit: `File size exceeds the ${Math.round(MAX_UPLOAD_SIZE_BYTES / (1024 * 1024))}MB upload limit.`,
     limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB max file size
+        fileSize: MAX_UPLOAD_SIZE_BYTES
     }
 }));
 

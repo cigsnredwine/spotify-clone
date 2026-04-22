@@ -58,6 +58,12 @@ export const createSong = async (req, res, next) => {
         const audioFile = req.files.audioFile;
         const imageFile = req.files.imageFile;
 
+        if (audioFile.truncated || imageFile.truncated) {
+            return res.status(413).json({
+                message: "One or more files exceeded the upload limit. Please use smaller files and try again.",
+            });
+        }
+
         const audioUpload = await uploadToCloudinary(audioFile, { resource_type: "video" });
         const imageUpload = await uploadToCloudinary(imageFile, { resource_type: "image" });
         const audioUrl = audioUpload.secure_url;
