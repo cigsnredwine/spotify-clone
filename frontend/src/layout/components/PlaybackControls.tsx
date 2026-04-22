@@ -54,7 +54,7 @@ export const PlaybackControls = () => {
 	};
 
 	return (
-		<footer className='h-24 border-t border-white/8 bg-black/34 px-4 backdrop-blur-[6px]'>
+		<footer className='h-24 border-t border-white/8 bg-black/34 px-4 backdrop-blur-[6px] rounded-xl'>
 			<div className='mx-auto flex h-full max-w-[1800px] items-center justify-between gap-4'>
 				{/* currently playing song */}
 				<div className='hidden w-[30%] min-w-[180px] items-center gap-4 sm:flex'>
