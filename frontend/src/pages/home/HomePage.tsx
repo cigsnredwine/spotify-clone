@@ -49,7 +49,7 @@ const HomePage = () => {
                                 Lyre
                             </p>
                             <h1 className="mt-4 max-w-2xl text-2xl font-medium tracking-tight text-zinc-400 sm:text-4xl">
-                                Hear songs before they&apos;re released
+                                Listen to songs before they&apos;re released
                             </h1>
                         </div>
                     </section>
