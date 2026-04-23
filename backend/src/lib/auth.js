@@ -17,6 +17,7 @@ await mongoClient.connect();
 
 export const auth = betterAuth({
 	baseURL: authBaseURL,
+	appName: "Lyre",
 	secret: process.env.BETTER_AUTH_SECRET || "better-auth-dev-secret-change-me",
 	trustedOrigins,
 	database: mongodbAdapter(mongoClient.db()),
